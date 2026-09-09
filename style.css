@@ -242,3 +242,34 @@ canvas#jrRadar{position:relative;width:100%;height:100%;display:block}
   .fresh .live{animation:none}
   .btn:hover,.cat:hover,.job:hover{transform:none}
 }
+
+/* search facet filters */
+.filters{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+.fchip{font-family:var(--font-m);font-size:.74rem;padding:7px 13px;border-radius:999px;border:1px solid var(--border);
+  background:var(--surface);color:var(--muted);cursor:pointer;transition:.15s}
+.fchip:hover{border-color:var(--brand);color:var(--text)}
+.fchip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+
+/* saved (star) */
+.job{position:relative}
+.job h3{padding-right:28px}
+.star{position:absolute;top:12px;right:12px;width:30px;height:30px;display:grid;place-items:center;
+  border-radius:9px;font-size:16px;color:var(--faint);cursor:pointer;line-height:1;border:1px solid transparent;transition:.15s;z-index:2}
+.star:hover{color:var(--signal);border-color:var(--border);background:var(--bg)}
+.star.on{color:var(--signal)}
+
+/* interactive profile builder */
+.builder{padding:10px 0 0}
+.bchips{display:flex;flex-wrap:wrap;gap:9px;margin:16px 0}
+.bchip{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-b);font-size:.9rem;font-weight:600;
+  padding:9px 15px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);cursor:pointer;transition:.15s}
+.bchip:hover{transform:translateY(-2px);border-color:var(--brand);box-shadow:var(--shadow)}
+.bchip.on{border-color:var(--brand);background:var(--brand);color:#fff}
+.bchip .c{font-family:var(--font-m);font-size:.76rem;color:var(--signal)}
+.bchip.on .c{color:#fff}
+.bout{display:flex;flex-wrap:wrap;align-items:center;gap:14px;margin:16px 0 4px;padding:18px 20px;
+  border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.bout .big{font-family:var(--font-d);font-weight:800;font-size:1.7rem;color:var(--signal);line-height:1}
+.bout .lbl{color:var(--muted)}
+.bout .btn{margin-left:auto}
+@media (max-width:560px){.bout .btn{margin-left:0;width:100%;justify-content:center}}

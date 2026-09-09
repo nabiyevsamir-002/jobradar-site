@@ -31,23 +31,84 @@
         location.replace(alt.ru); return;
       }
     }
-    // on-site search over inlined titles
+    function esc(x){return (x||"").replace(/[<>&"]/g,function(c){
+      return {"<":"&lt;",">":"&gt;","&":"&amp;","\"":"&quot;"}[c];});}
+    // on-site search with facet filters (all / web / telegram / today)
     var box=document.getElementById("jrSearch"), out=document.getElementById("jrResults");
-    var data=window.__JOBS||[], none=window.__noneText||"";
-    if(box&&out){
-      box.addEventListener("input",function(){
-        var q=box.value.trim().toLowerCase();
-        if(q.length<2){out.innerHTML="";return;}
-        var r=[];
-        for(var i=0;i<data.length&&r.length<20;i++){
-          if(data[i][0].toLowerCase().indexOf(q)>=0) r.push(data[i]);
-        }
-        if(!r.length){out.innerHTML='<div class="sr">'+none+'</div>';return;}
-        out.innerHTML=r.map(function(j){
-          var u=j[1]||"https://t.me/JobRadarAzBot";
-          return '<a class="sr" href="'+u+'">'+j[0].replace(/[<>&]/g,function(c){
-            return {"<":"&lt;",">":"&gt;","&":"&amp;"}[c];})+'</a>';
-        }).join("");
+    var data=window.__JOBS||[], none=window.__noneText||"", flt="all";
+    function runSearch(){
+      if(!out) return;
+      var q=box?box.value.trim().toLowerCase():"";
+      if(q.length<2 && flt==="all"){out.innerHTML="";return;}
+      var r=[];
+      for(var i=0;i<data.length&&r.length<20;i++){
+        var d=data[i];
+        if(q.length>=2 && d[0].toLowerCase().indexOf(q)<0) continue;
+        if(flt==="web" && d[2]!=="web") continue;
+        if(flt==="tg" && d[2]!=="tg") continue;
+        if(flt==="today" && d[3]!==1) continue;
+        r.push(d);
+      }
+      if(!r.length){out.innerHTML='<div class="sr">'+none+'</div>';return;}
+      out.innerHTML=r.map(function(j){
+        return '<a class="sr" href="'+(j[1]||"https://t.me/JobRadarAzBot")+'">'+esc(j[0])+'</a>';
+      }).join("");
+    }
+    if(box) box.addEventListener("input",runSearch);
+    var fbox=document.getElementById("jrFilters");
+    if(fbox) fbox.addEventListener("click",function(e){
+      var b=e.target.closest(".fchip"); if(!b) return;
+      flt=b.getAttribute("data-f")||"all";
+      [].forEach.call(fbox.querySelectorAll(".fchip"),function(x){x.classList.toggle("on",x===b);});
+      runSearch();
+    });
+
+    // saved jobs (localStorage, shared across pages) + recently viewed
+    function getL(k){try{return JSON.parse(localStorage.getItem(k)||"[]");}catch(e){return [];}}
+    function setL(k,v){try{localStorage.setItem(k,JSON.stringify(v.slice(0,60)));}catch(e){}}
+    var SK="jr_saved";
+    function savedHas(u,t){var l=getL(SK);for(var i=0;i<l.length;i++)if(l[i].u===u&&l[i].t===t)return true;return false;}
+    function miniCard(o){return '<a class="job" href="'+esc(o.u)+'"><div class="top"></div><h3>'+esc(o.t)+'</h3></a>';}
+    function renderL(wrapId,boxId,key){
+      var w=document.getElementById(wrapId),b=document.getElementById(boxId); if(!b) return;
+      var l=getL(key); if(!l.length){if(w)w.hidden=true;return;} if(w)w.hidden=false;
+      b.innerHTML=l.map(miniCard).join("");
+    }
+    [].forEach.call(document.querySelectorAll(".star"),function(st){
+      var t=st.getAttribute("data-jt")||"",u=st.getAttribute("data-ju")||"";
+      if(savedHas(u,t)){st.classList.add("on");st.textContent="★";}
+      function toggle(e){
+        if(e){e.preventDefault();e.stopPropagation();}
+        var l=getL(SK),f=-1;
+        for(var i=0;i<l.length;i++)if(l[i].u===u&&l[i].t===t){f=i;break;}
+        if(f>=0){l.splice(f,1);st.classList.remove("on");st.textContent="☆";}
+        else{l.unshift({t:t,u:u});st.classList.add("on");st.textContent="★";}
+        setL(SK,l);renderL("jrSavedWrap","jrSaved",SK);
+      }
+      st.addEventListener("click",toggle);
+      st.addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){toggle(e);}});
+    });
+    renderL("jrSavedWrap","jrSaved",SK);
+    var RK="jr_recent", jj=document.getElementById("jrJob");
+    if(jj){var t=jj.getAttribute("data-t")||"",u=jj.getAttribute("data-u")||"";
+      if(t&&u){var rl=getL(RK).filter(function(o){return o.u!==u;});rl.unshift({t:t,u:u});setL(RK,rl.slice(0,8));}}
+    renderL("jrRecentWrap","jrRecent",RK);
+
+    // interactive profile builder -> deep-links into the bot
+    var bwrap=document.getElementById("jrBuilder"),bout=document.getElementById("jrBuilderOut");
+    if(bwrap&&window.__CATS){
+      var T=window.__T||{},BOTU=window.__BOT||"https://t.me/JobRadarAzBot";
+      bwrap.innerHTML=window.__CATS.slice(0,14).map(function(c){
+        return '<button class="bchip" type="button" data-k="'+esc(c[0])+'" data-n="'+esc(c[2])+
+          '" data-c="'+c[3]+'"><span>'+c[1]+'</span> '+esc(c[2])+' <span class="c">'+c[3]+'</span></button>';
+      }).join("");
+      bwrap.addEventListener("click",function(e){
+        var b=e.target.closest(".bchip"); if(!b) return;
+        [].forEach.call(bwrap.querySelectorAll(".bchip"),function(x){x.classList.toggle("on",x===b);});
+        var k=b.getAttribute("data-k"),n=b.getAttribute("data-n"),c=b.getAttribute("data-c");
+        bout.hidden=false;
+        bout.innerHTML='<span class="big">'+esc(c)+'</span><span class="lbl">'+esc(n)+' · '+esc(T.found||"")+
+          '</span><a class="btn" href="'+BOTU+"?start="+esc((T.start||"field_")+k)+'">'+esc(T.cta||"Telegram")+'</a>';
       });
     }
     // hero radar — the signature: a live sweep that lights up job "contacts"
