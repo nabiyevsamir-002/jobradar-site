@@ -9,7 +9,7 @@
     var tb=document.getElementById("themeToggle");
     if(tb) tb.addEventListener("click",function(){
       var cur=root.getAttribute("data-theme");
-      var dark=cur? cur==="dark" : matchMedia("(prefers-color-scheme:dark)").matches;
+      var dark=cur? cur==="dark" : true;   // brand default is dark
       var next=dark?"light":"dark";
       root.setAttribute("data-theme",next);
       try{localStorage.setItem(TK,next);}catch(e){}
@@ -118,11 +118,11 @@
       var ctx=cv.getContext("2d"), R,cx,cy, COL={};
       function readColors(){
         var cs=getComputedStyle(root);
-        COL.radar=(cs.getPropertyValue("--radar")||"#5b93f0").trim();
-        COL.signal=(cs.getPropertyValue("--signal")||"#ffb020").trim();
-        COL.ink=(cs.getPropertyValue("--text")||"#e9eefb").trim();
-        COL.faint=(cs.getPropertyValue("--faint")||"#66759a").trim();
-        COL.brand=(cs.getPropertyValue("--brand")||"#3b82f6").trim();
+        COL.radar=(cs.getPropertyValue("--radar")||"#2389FF").trim();
+        COL.signal=(cs.getPropertyValue("--signal")||"#B6FF00").trim();
+        COL.ink=(cs.getPropertyValue("--text")||"#F3F8FF").trim();
+        COL.faint=(cs.getPropertyValue("--faint")||"#6E82A0").trim();
+        COL.brand=(cs.getPropertyValue("--brand")||"#2389FF").trim();
       }
       window.__jrRadarSync=readColors;
       function size(){
