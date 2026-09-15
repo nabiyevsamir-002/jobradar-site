@@ -56,7 +56,14 @@ h2.sec{font-size:clamp(1.35rem,2.4vw,1.7rem);margin:44px 0 4px;font-weight:800}
 .icon-btn:hover{border-color:var(--brand);color:var(--brand)}
 .lang{border:1px solid var(--border);border-radius:10px;padding:8px 12px;font-family:var(--font-m);font-size:.78rem;font-weight:500;color:var(--muted)}
 .lang:hover{border-color:var(--brand);color:var(--brand)}
-@media (max-width:640px){.nav-links{display:none}}
+.btn-emp{background:var(--surface);color:var(--brand);border:1px solid var(--brand)}
+.btn-emp:hover{background:var(--brand);color:#fff}
+@media (max-width:640px){.nav-links{display:none}
+  /* the bottom Telegram CTA covers the job-seeker path on mobile, so free the
+     nav row for the employer button instead of crowding both in. */
+  .nav .tg-btn{display:none}
+  .nav-r{gap:6px}
+  .btn-emp{padding:8px 10px;font-size:.82rem}}
 
 /* buttons */
 .btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-b);font-weight:700;text-decoration:none;cursor:pointer;

@@ -1,5 +1,5 @@
 
-/* JobRadar service worker — network-first, cache fallback (safe & minimal). */
+/* JobRadar AZ service worker — network-first, cache fallback (safe & minimal). */
 var C="jobradar-v1";
 self.addEventListener("install",function(e){self.skipWaiting();});
 self.addEventListener("activate",function(e){
